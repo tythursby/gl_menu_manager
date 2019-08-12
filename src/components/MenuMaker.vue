@@ -4,7 +4,8 @@
   <mdb-card class="mb-4">
     <mdb-card-body class="d-sm-flex justify-content-between">
       <img src="../assets/greenleaf-logo.png" height='50'>
-      <mdb-btn outline="blue" tag="a" href="#" darkWaves>PUSH TO CLOUD
+
+      <mdb-btn class="right" outline="blue" tag="a" href="#" darkWaves>PUSH TO CLOUD
         <mdb-icon icon="cloud" class="ml-2" />
       </mdb-btn>
     </mdb-card-body>
@@ -14,34 +15,41 @@
     <mdb-col lg="12" md="12" class="mb-r">
       <mdb-card>
         <mdb-card-header class="font-bold mb-2">
-          Edit
+          Actions
         </mdb-card-header>
         <mdb-card-body class="text-center">
+
           <mdb-row>
-            <mdb-col lg="3" md="6" class="mb-r">
-              <mdb-select v-model="locations" />
-              <mdb-select @getValue="getSelectedCategory" :options="categories" />
+            <mdb-col lg="3" md="6">
+              <mdb-select color='default' @getValue="getSelectedCategory" :options="categories" label="Edit Category" />
+              <!-- <mdb-select v-model="locations" label="Inventory Location" /> -->
 
             </mdb-col>
-            <mdb-col lg="3" md="6" class="mb-r">
-              <mdb-container>
-                <mdb-select multiple selectAll @getValue="getHiddenValues" :options="hidden" label="Hide Categories" />
-              </mdb-container>
+            <mdb-col lg="3" md="6">
+
+              <mdb-select multiple selectAll @getValue="getHiddenValues" :options="hideOptions" label="Hide Categories" />
+
+
             </mdb-col>
             <mdb-col lg="3" md="6" class="mb-r">
               <mdb-container class='alignLeft'>
                 <p class="label">Category Order</p>
-                <mdb-input type="checkbox" id="alphabetical" name="arrange_alpha" v-model="alpha" label="Arrange Alphabetically" />
-                <mdb-input type="checkbox" id="R_alphabetical" name="arrange_R_alpha" v-model="R_alpha" label="Arrange Reverse-Alphabetically" />
-                <mdb-btn size="sm" class='center' rounded>Custom Arrangement</mdb-btn>
+                <mdb-input type="checkbox" id="alphabetical" name="arrange_alpha" v-model="arrangeAlpha" label="Arrange Alphabetically" />
+
+                <mdb-btn size="sm" class='center' outline='default' darkWaves>Custom Arrangement</mdb-btn>
               </mdb-container>
             </mdb-col>
             <mdb-col lg="3" md="6" class="mb-r">
+
               <mdb-container class='alignLeft'>
+                <p class="label">Category Image</p>
+                <mdb-file-input sm btnColor="primary" v-model='categoryImage' />
+              </mdb-container>
+              <!-- <mdb-container class='alignLeft'>
                 <p class="label">Category Low Stock Limit</p>
                 <p class='description'>(All items in category will automatically hide at this Low Stock Limit unless specific Item Stock Limit is set)</p>
                 <mdb-input type='number' v-model='lowStockCategory' />
-              </mdb-container>
+              </mdb-container> -->
             </mdb-col>
           </mdb-row>
         </mdb-card-body>
@@ -51,9 +59,6 @@
   <mdb-card cascade narrow>
     <mdb-card-header class="font-bold mb-2">
 
-      {{selectedCategory}}
-
-      <mdb-btn size="sm" class='right' rounded>Hide All Items</mdb-btn>
 
 
     </mdb-card-header>
@@ -62,9 +67,12 @@
         <mdb-tbl-head color="primary-color" textWhite>
 
           <tr>
+            <th>
+              <mdb-icon far icon="file-image" />
+            </th>
             <th>Item Name</th>
             <th>Price</th>
-            <th>Low Stock Limit</th>
+            <!-- <th>Low Stock Limit</th> -->
             <th>Product Id#</th>
             <th>Category Id#</th>
             <th>Strain Type</th>
@@ -73,16 +81,22 @@
           </tr>
         </mdb-tbl-head>
         <mdb-tbl-body>
-          <tr scope="row" v-for="x in menu">
-            <th scope="row">{{x.name}}</th>
-            <td>Cell</td>
-            <td>Cell</td>
-            <td>Cell</td>
-            <td>Cell</td>
-            <td>Cell</td>
-            <td>
-              <mdb-input class="menuCheckHide" type="checkbox" id="checkboxItem" name="checkItem" v-model="hide" />
+          <tr scope="row" v-for='x in selectedCategoryItems' class="tableRow">
+            <th scope="row"><img src="https://mdbootstrap.com/img/Others/documentation/img%20(75)-mini.jpg" alt="thumbnail" class="img-thumbnail left" style="width: 80px; height: 80px">
+            </th>
+            <td style="vertical-align: middle">{{x.name}}</td>
+            <td style="vertical-align: middle">{{x.price}}</td>
+            <!-- <td>{{}}</td> -->
+            <td style="vertical-align: middle">{{x.productid}}</td>
+            <td style="vertical-align: middle">{{x.productcategory}}</td>
+            <td style="vertical-align: middle">{{x.straintype ? x.straintype : 'N/A'}}</td>
+            <td style="vertical-align: middle">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" :id="x.productid" :key='x.productid' :value='x.productid' v-model="hideItems" class="custom-control-input hideItemInput">
+                <label class="custom-control-label" :for='x.productid'></label>
+              </div>
             </td>
+
 
           </tr>
 
@@ -110,6 +124,7 @@ import {
   mdbTblHead,
   mdbTblBody,
   mdbInput,
+  mdbFileInput,
   mdbSelect,
   mdbNumericInput,
   mdbContainer
@@ -132,14 +147,19 @@ export default {
     mdbTblHead,
     mdbTblBody,
     mdbInput,
+    mdbFileInput,
     mdbSelect,
     mdbNumericInput,
     mdbContainer
   },
   data() {
     return {
+      arrangeAlpha: null,
       selectedCategory: null,
+      categoryImage: null,
+      selectedCategoryItems: [],
       hideCategories: [],
+      hideItems: [],
       menu: null,
       locations: [{
         text: 'Choose Location',
@@ -153,7 +173,7 @@ export default {
         disabled: true,
         selected: true
       }],
-      hidden: [{
+      hideOptions: [{
         text: 'Choose',
         value: null,
         disabled: true,
@@ -162,11 +182,29 @@ export default {
     }
   },
   methods: {
+
     getHiddenValues(value, text) {
       this.hideCategories = value;
     },
+    addItemHide(value, id) {
+      this.hideProducts = {
+        id: id,
+        hidden: value
+      };
+    },
     getSelectedCategory(value) {
       this.selectedCategory = value;
+
+      for (var i = 0; i < this.menu.length; i++) {
+        var itemList = Object.values(this.menu[i].items);
+        var catList = Object.values(this.menu[i]);
+
+        if (catList.includes(value)) {
+
+          this.selectedCategoryItems = itemList;
+
+        }
+      }
     }
   },
   mounted() {
@@ -175,6 +213,8 @@ export default {
       .then(response => {
         this.menu = response.data.data;
         for (var i = 0; i < this.menu.length; i++) {
+          var itemList = Object.values(this.menu[i].items);
+
           var catObj = {
             text: this.menu[i].name,
             value: this.menu[i].name,
@@ -186,7 +226,8 @@ export default {
             selected: false
           };
           this.categories.push(catObj);
-          this.hidden.push(hideObj);
+          this.hideOptions.push(hideObj);
+
         }
       })
       .catch(error => {
@@ -199,6 +240,27 @@ export default {
 </script>
 
 <style scoped>
+.editCatName {
+  width: 25%;
+}
+
+.md-form {
+  margin: 0;
+}
+
+.container {
+  padding: 0;
+}
+
+.hideItemInput {
+  vertical-align: middle;
+}
+
+.form-check {
+
+  padding-left: 0;
+}
+
 .menuCheckHide {
   padding-left: 0;
 }
@@ -218,6 +280,11 @@ export default {
 .cardP {
   padding: 0;
   margin: 0;
+}
+
+.locationHeader {
+  margin: 0;
+  padding: 0;
 }
 
 .left {

@@ -5,7 +5,7 @@
     <mdb-navbar-brand>ADMIN</mdb-navbar-brand>
     <mdb-navbar-toggler>
       <mdb-navbar-nav left>
-        <mdb-nav-item to="#" waves-fixed active class="active">Home</mdb-nav-item>
+
         <mdb-nav-item href="#" waves-fixed>Terms/Conditions</mdb-nav-item>
         <mdb-nav-item href="#" waves-fixed>Help <i class="far fa-question-circle"></i></mdb-nav-item>
 
@@ -24,34 +24,35 @@
   <div class="sidebar-fixed position-fixed">
     <a class="logo-wrapper"><img alt="" class="img-fluid" src="./assets/DUBI.png" /></a>
     <mdb-list-group class="list-group-flush">
-      <router-link to="/dashboard" @click.native="activeItem = 1">
+
+      <router-link to="/menuMaker" @click.native="activeItem = 1">
         <mdb-list-group-item :action="true" :class="activeItem === 1 && 'active'">
-          <mdb-icon icon="chart-pie" class="mr-3" />Dashboard</mdb-list-group-item>
-      </router-link>
-      <router-link to="/profile" @click.native="activeItem = 2">
-        <mdb-list-group-item :action="true" :class="activeItem === 2 && 'active'">
-          <mdb-icon icon="user" class="mr-3" />Profile</mdb-list-group-item>
-      </router-link>
-      <router-link to="/menuMaker" @click.native="activeItem = 3">
-        <mdb-list-group-item :action="true" :class="activeItem === 3 && 'active'">
           <mdb-icon icon="cannabis" class="mr-3" />Menu Manager</mdb-list-group-item>
       </router-link>
-      <router-link to="/push" @click.native="activeItem = 4">
-        <mdb-list-group-item :action="true" :class="activeItem === 4 && 'active'">
+      <router-link to="/push" @click.native="activeItem = 2">
+        <mdb-list-group-item :action="true" :class="activeItem === 2 && 'active'">
           <mdb-icon icon="paper-plane" class="mr-3" />Push Notifications</mdb-list-group-item>
       </router-link>
-      <router-link to="/highlights" @click.native="activeItem = 5">
-        <mdb-list-group-item :action="true" :class="activeItem === 5 && 'active'">
+      <router-link to="/highlights" @click.native="activeItem = 3">
+        <mdb-list-group-item :action="true" :class="activeItem === 3 && 'active'">
           <mdb-icon icon="highlighter" class="mr-3" />HighLights</mdb-list-group-item>
       </router-link>
-      <router-link to="/hours" @click.native="activeItem = 6">
-        <mdb-list-group-item :action="true" :class="activeItem === 6 && 'active'">
+      <router-link to="/hours" @click.native="activeItem = 4">
+        <mdb-list-group-item :action="true" :class="activeItem === 4 && 'active'">
           <mdb-icon icon="clock" class="mr-3" />Hours of Operation</mdb-list-group-item>
+      </router-link>
+      <!-- <router-link to="/dashboard" @click.native="activeItem = 5">
+        <mdb-list-group-item :action="true" :class="activeItem === 5 && 'active'">
+          <mdb-icon icon="chart-pie" class="mr-3" />Dashboard</mdb-list-group-item>
+      </router-link>
+      <router-link to="/profile" @click.native="activeItem = 6">
+        <mdb-list-group-item :action="true" :class="activeItem === 6 && 'active'">
+          <mdb-icon icon="user" class="mr-3" />Profile</mdb-list-group-item>
       </router-link>
       <router-link to="/networkSettings" @click.native="activeItem = 7">
         <mdb-list-group-item :action="true" :class="activeItem === 7 && 'active'">
           <mdb-icon icon="network-wired" class="mr-3" />Network Settings</mdb-list-group-item>
-      </router-link>
+      </router-link> -->
     </mdb-list-group>
   </div>
   <!-- /Sidebar  -->
@@ -61,22 +62,25 @@
     </div>
     <ftr color="primary-color-dark" class="text-center font-small darken-2">
       <div class="pt-4">
-        <mdb-btn outline="white" tag="a" href="#" target="_blank">GET DUBI PRO
+        <mdb-btn outline="white" tag="a" href="#" target="_blank" disabled>GET DUBI PRO
           <mdb-icon icon="unlock" class="ml-2" />
         </mdb-btn>
       </div>
       <hr class="my4" />
       <div class="pb-4">
-        <a href="#">
-          <mdb-icon fab icon="facebook-square" class="mr-3" /></a>
-        <a href="#">
-          <mdb-icon fas icon="globe" class="mr-3" /></a>
-        <a href="#">
-          <mdb-icon fab icon="github" class="mr-3" /></a>
+        <mdb-btn floating size='sm' gradient='blue' tag="a" href="#" target="_blank" disabled>
+          <mdb-icon fab icon="facebook-square" class="mr-3" />
+        </mdb-btn>
+        <mdb-btn floating size='sm' gradient='blue' tag="a" href="#" target="_blank" disabled>
+          <mdb-icon fas icon="globe" class="mr-3" />
+        </mdb-btn>
+        <mdb-btn floating size='sm' gradient='blue' tag="a" href="#" target="_blank" disabled>
+          <mdb-icon fab icon="github" class="mr-3" />
+        </mdb-btn>
 
       </div>
       <p class="footer-copyright mb-0 py-3 text-center">
-        &copy; {{new Date().getFullYear()}} Copyright <a href="https://mdbootstrap.com/docs/vue/"> DUBI.cloud </a>
+        &copy; {{new Date().getFullYear()}} Copyright DUBI.cloud
       </p>
     </ftr>
   </main>
@@ -99,8 +103,10 @@ import {
   mdbFooter,
   waves
 } from 'mdbvue'
-import Dashboard from './components/Dashboard'
-import Profile from './components/Profile'
+import Profile from './components/Profile';
+import MenuMaker from './components/MenuMaker';
+import Push from './components/Push';
+import Hours from './components/Hours';
 
 export default {
   name: 'AdminTemplate',
@@ -117,8 +123,10 @@ export default {
     mdbIcon,
     mdbCardBody,
     'ftr': mdbFooter,
-    Dashboard,
-    Profile
+    Profile,
+    MenuMaker,
+    Push,
+    Hours
   },
   data() {
     return {

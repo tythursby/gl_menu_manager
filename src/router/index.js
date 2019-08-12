@@ -15,41 +15,41 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard,
-      props: { page: 1 },
-      alias: '/'
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      props: { page: 2 },
-      component: Profile
-    },
-    {
       path: '/menuMaker',
       name: 'MenuMaker',
-      props: { page: 3 },
-      component: MenuMaker
+      props: { page: 1 },
+      component: MenuMaker,
+      alias: '/'
     },
     {
       path: '/push',
       name: 'Push',
-      props: { page: 4 },
+      props: { page: 2 },
       component: Push
     },
     {
       path: '/highlights',
       name: 'Highlights',
-      props: { page: 5 },
+      props: { page: 3 },
       component: Highlights
     },
     {
       path: '/hours',
       name: 'Hours',
-      props: { page: 6 },
+      props: { page: 4 },
       component: Hours
+    },
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: Dashboard,
+      props: { page: 5 },
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      props: { page: 6 },
+      component: Profile
     },
     {
       path: '/networkSettings',

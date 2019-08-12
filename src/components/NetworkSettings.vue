@@ -1,6 +1,25 @@
 <template>
 <section id="profile">
+  <div class="locked">
+    <mdb-card class="lockedMessage mb-4">
+      <mdb-card-header>
 
+        Feature Unavailable
+
+      </mdb-card-header>
+      <mdb-card-body class="d-sm-flex">
+        <mdb-col>
+          <h4>
+
+            DUBI PRO
+            <mdb-icon icon="lock" />
+
+          </h4>
+
+        </mdb-col>
+      </mdb-card-body>
+    </mdb-card>
+  </div>
   <mdb-card class="mb-4">
     <mdb-card-body class="d-sm-flex justify-content-between">
       <img src="../assets/greenleaf-logo.png" height='50'>
@@ -49,6 +68,7 @@ import {
   mdbRow,
   mdbCol,
   mdbCard,
+  mdbCardHeader,
   mdbCardBody,
   mdbCardTitle,
   mdbCardText,
@@ -65,6 +85,7 @@ export default {
     mdbRow,
     mdbCol,
     mdbCard,
+    mdbCardHeader,
     mdbCardBody,
     mdbCardTitle,
     mdbCardText,
@@ -84,6 +105,26 @@ export default {
 .profile-card-footer {
   background-color: #F7F7F7 !important;
   padding: 1.25rem;
+}
+
+.locked {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.lockedMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
 }
 
 .card.card-cascade .view {
