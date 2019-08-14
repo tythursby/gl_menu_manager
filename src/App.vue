@@ -4,16 +4,16 @@
   <mdb-navbar class="flexible-navbar white" light position="top" scrolling>
     <mdb-navbar-brand>ADMIN</mdb-navbar-brand>
     <mdb-navbar-toggler>
-      <mdb-navbar-nav left>
+      <!-- <mdb-navbar-nav left>
 
         <mdb-nav-item href="#" waves-fixed>Terms/Conditions</mdb-nav-item>
         <mdb-nav-item href="#" waves-fixed>Help <i class="far fa-question-circle"></i></mdb-nav-item>
 
-      </mdb-navbar-nav>
+      </mdb-navbar-nav> -->
       <mdb-navbar-nav right>
 
-        <mdb-nav-item href="#" waves-fixed class="border border-light rounded mr-1" target="_blank">
-          <mdb-icon icon="tools" class="mr-2" />Account Settings </mdb-nav-item>
+        <!-- <mdb-nav-item href="#" waves-fixed class="border border-light rounded mr-1" target="_blank">
+          <mdb-icon icon="tools" class="mr-2" />Account Settings </mdb-nav-item> -->
         <mdb-nav-item href="#" waves-fixed class="border border-light rounded" target="_blank">
           <mdb-icon icon="user" far class="mr-2" />Log Out </mdb-nav-item>
       </mdb-navbar-nav>
@@ -22,7 +22,8 @@
   <!--/.Navbar-->
   <!-- Sidebar -->
   <div class="sidebar-fixed position-fixed">
-    <a class="logo-wrapper"><img alt="" class="img-fluid" src="./assets/DUBI.png" /></a>
+    <!-- <a class="logo-wrapper"><img alt="" class="img-fluid" src="./assets/DUBI.png" /></a> -->
+    <img src="./assets/greenleaf-logo.png" height='50' style='margin-top: 40px; margin-bottom: 40px;'>
     <mdb-list-group class="list-group-flush">
 
       <router-link to="/menuMaker" @click.native="activeItem = 1">
@@ -35,7 +36,7 @@
       </router-link>
       <router-link to="/highlights" @click.native="activeItem = 3">
         <mdb-list-group-item :action="true" :class="activeItem === 3 && 'active'">
-          <mdb-icon icon="highlighter" class="mr-3" />HighLights</mdb-list-group-item>
+          <mdb-icon icon="star" class="mr-3" />Daily Special</mdb-list-group-item>
       </router-link>
       <router-link to="/hours" @click.native="activeItem = 4">
         <mdb-list-group-item :action="true" :class="activeItem === 4 && 'active'">
@@ -60,7 +61,7 @@
     <div class="mt-5 p-5">
       <router-view></router-view>
     </div>
-    <ftr color="primary-color-dark" class="text-center font-small darken-2">
+    <!-- <ftr color="primary-color-dark" class="text-center font-small darken-2">
       <div class="pt-4">
         <mdb-btn outline="white" tag="a" href="#" target="_blank" disabled>GET DUBI PRO
           <mdb-icon icon="unlock" class="ml-2" />
@@ -82,7 +83,7 @@
       <p class="footer-copyright mb-0 py-3 text-center">
         &copy; {{new Date().getFullYear()}} Copyright DUBI.cloud
       </p>
-    </ftr>
+    </ftr> -->
   </main>
 </div>
 </template>

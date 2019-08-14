@@ -3,7 +3,10 @@
 
   <mdb-card class="mb-4">
     <mdb-card-body class="d-sm-flex justify-content-between">
-      <img src="../assets/greenleaf-logo.png" height='50'>
+      <mdb-btn class="right" outline="blue" disabled rounded>
+        Daily Special
+        <mdb-icon icon="star" class="ml-2" />
+      </mdb-btn>
       <mdb-btn outline="blue" tag="a" href="#" target="_blank">PUSH TO CLOUD
         <mdb-icon icon="cloud" class="ml-2" />
       </mdb-btn>

@@ -3,7 +3,10 @@
 
   <mdb-card class="mb-4">
     <mdb-card-body class="d-sm-flex justify-content-between">
-      <img src="../assets/greenleaf-logo.png" height='50'>
+      <mdb-btn class="right" outline="blue" disabled rounded>
+        MENU MANAGER
+        <mdb-icon icon="cannabis" class="ml-2" />
+      </mdb-btn>
 
       <mdb-btn class="right" outline="blue" tag="a" href="#" darkWaves>PUSH TO CLOUD
         <mdb-icon icon="cloud" class="ml-2" />
@@ -20,37 +23,36 @@
         <mdb-card-body class="text-center">
 
           <mdb-row>
-            <mdb-col lg="3" md="6">
-              <mdb-select color='default' @getValue="getSelectedCategory" :options="categories" label="Edit Category" />
+            <mdb-col lg="4" md="6">
+              <mdb-select color='default' @getValue="getSelectedCategory" :options="editCategoryOptions" label="Edit Category" />
               <!-- <mdb-select v-model="locations" label="Inventory Location" /> -->
 
             </mdb-col>
-            <mdb-col lg="3" md="6">
+            <mdb-col lg="4" md="6">
 
               <mdb-select multiple selectAll @getValue="getHiddenValues" :options="hideOptions" label="Hide Categories" />
 
 
             </mdb-col>
-            <mdb-col lg="3" md="6" class="mb-r">
+            <mdb-col lg="4" md="6" class="mb-r">
               <mdb-container class='alignLeft'>
                 <p class="label">Category Order</p>
+
                 <mdb-input type="checkbox" id="alphabetical" name="arrange_alpha" v-model="arrangeAlpha" label="Arrange Alphabetically" />
 
                 <mdb-btn size="sm" class='center' outline='default' darkWaves>Custom Arrangement</mdb-btn>
+
               </mdb-container>
             </mdb-col>
-            <mdb-col lg="3" md="6" class="mb-r">
+            <!-- <mdb-col lg="3" md="6" class="mb-r"> -->
 
-              <mdb-container class='alignLeft'>
-                <p class="label">Category Image</p>
-                <mdb-file-input sm btnColor="primary" v-model='categoryImage' />
-              </mdb-container>
-              <!-- <mdb-container class='alignLeft'>
+
+            <!-- <mdb-container class='alignLeft'>
                 <p class="label">Category Low Stock Limit</p>
                 <p class='description'>(All items in category will automatically hide at this Low Stock Limit unless specific Item Stock Limit is set)</p>
                 <mdb-input type='number' v-model='lowStockCategory' />
               </mdb-container> -->
-            </mdb-col>
+            <!-- </mdb-col> -->
           </mdb-row>
         </mdb-card-body>
       </mdb-card>
@@ -58,9 +60,19 @@
   </mdb-row>
   <mdb-card cascade narrow>
     <mdb-card-header class="font-bold mb-2">
-
-
-
+      <mdb-row>
+        <mdb-col lg="6" md="6" class="mb-r">
+          <mdb-input :label="selectedCategory" icon="edit" />
+          <p class='info'>(Changes to names will be reflected after successful Push To Cloud)</p>
+        </mdb-col>
+        <mdb-col lg="6" md="6" class="mb-r">
+          <p class="label">Category Image</p>
+          <mdb-container class='right' v-for='(x, index) in categories' :key="index">
+            <img v-bind:src="x.imagePreview" v-show="x.showPreview && x.name === selectedCategory" alt="thumbnail" class="img-thumbnail left" width='100px' style='margin-right: 5px;' />
+            <input type='file' accept="image/*" :id='x.name' :ref='x.name' v-on:change="handleFileUpload(x.name)" v-show='x.name === selectedCategory' />
+          </mdb-container>
+        </mdb-col>
+      </mdb-row>
     </mdb-card-header>
     <mdb-col lg="12" md="12" class="mb-r">
       <mdb-tbl responsiveMd>
@@ -82,9 +94,11 @@
         </mdb-tbl-head>
         <mdb-tbl-body>
           <tr scope="row" v-for='x in selectedCategoryItems' class="tableRow">
-            <th scope="row"><img src="https://mdbootstrap.com/img/Others/documentation/img%20(75)-mini.jpg" alt="thumbnail" class="img-thumbnail left" style="width: 80px; height: 80px">
+            <th scope="row"><img alt="thumbnail" class="img-thumbnail left" style="width: 80px; height: 80px">
             </th>
-            <td style="vertical-align: middle">{{x.name}}</td>
+            <td style="vertical-align: middle">
+              {{x.name}}
+            </td>
             <td style="vertical-align: middle">{{x.price}}</td>
             <!-- <td>{{}}</td> -->
             <td style="vertical-align: middle">{{x.productid}}</td>
@@ -154,20 +168,22 @@ export default {
   },
   data() {
     return {
-      arrangeAlpha: null,
+      file: '',
+      categories: [],
+      arrangeAlpha: true,
       selectedCategory: null,
-      categoryImage: null,
       selectedCategoryItems: [],
       hideCategories: [],
       hideItems: [],
+      products: [],
       menu: null,
-      locations: [{
-        text: 'Choose Location',
-        value: null,
-        disabled: true,
-        selected: true
-      }],
-      categories: [{
+      // locations: [{
+      //   text: 'Choose Location',
+      //   value: null,
+      //   disabled: true,
+      //   selected: true
+      // }],
+      editCategoryOptions: [{
         text: 'Choose Category',
         value: null,
         disabled: true,
@@ -186,11 +202,47 @@ export default {
     getHiddenValues(value, text) {
       this.hideCategories = value;
     },
-    addItemHide(value, id) {
-      this.hideProducts = {
-        id: id,
-        hidden: value
-      };
+    handleFileUpload(x) {
+      console.log(this.$refs[x])
+      for (var i = 0; i < this.categories.length; i++) {
+        var name = this.categories[i].name;
+        if (name === x) {
+          this.categories[i].file = this.$refs[x][0].files[0];
+          var current = this.categories[i];
+          if (/\.(jpe?g|png|gif)$/i.test(this.categories[i].file.name)) {
+
+            let reader = new FileReader();
+
+            reader.addEventListener("load", function() {
+              current.showPreview = true;
+              current.imagePreview = reader.result;
+            }.bind(this), false);
+
+            reader.readAsDataURL(this.categories[i].file);
+          }
+        }
+      }
+    },
+    handleFileUploadProducts(x) {
+      console.log(this.$refs[x])
+      for (var i = 0; i < this.products.length; i++) {
+        var name = this.products[i].name;
+        if (name === x) {
+          this.products[i].file = this.$refs[x][0].files[0];
+          var current = this.products[i];
+          if (/\.(jpe?g|png|gif)$/i.test(this.products[i].file.name)) {
+
+            let reader = new FileReader();
+
+            reader.addEventListener("load", function() {
+              current.showPreview = true;
+              current.imagePreview = reader.result;
+            }.bind(this), false);
+
+            reader.readAsDataURL(this.products[i].file);
+          }
+        }
+      }
     },
     getSelectedCategory(value) {
       this.selectedCategory = value;
@@ -212,9 +264,30 @@ export default {
       .get('https://api.compassionate.cloud/greenleaf/menu')
       .then(response => {
         this.menu = response.data.data;
-        for (var i = 0; i < this.menu.length; i++) {
-          var itemList = Object.values(this.menu[i].items);
+        var items = this.menu.map(item =>
+          Object.values(item.items).map(x => x.productid)
+        );
+        var merged = [].concat.apply([], items);
 
+        for (var i = 0; i < merged.length; i++) {
+          var productsObj = {
+            productId: merged[i],
+            editedName: '',
+            file: '',
+            imagePreview: '',
+          }
+          this.products.push(productsObj);
+        };
+
+        for (var i = 0; i < this.menu.length; i++) {
+
+          var catImageObj = {
+            name: this.menu[i].name,
+            editedName: '',
+            file: '',
+            imagePreview: '',
+            showPreview: false
+          };
           var catObj = {
             text: this.menu[i].name,
             value: this.menu[i].name,
@@ -225,10 +298,11 @@ export default {
             value: this.menu[i].name,
             selected: false
           };
-          this.categories.push(catObj);
+          this.editCategoryOptions.push(catObj);
           this.hideOptions.push(hideObj);
+          this.categories.push(catImageObj);
 
-        }
+        };
       })
       .catch(error => {
         console.log(error);
@@ -293,6 +367,7 @@ export default {
 
 .label {
   font-weight: bold;
+  align-self: 'center';
 }
 
 .alignLeft {
@@ -301,6 +376,15 @@ export default {
 
 .center {
   text-align: center;
+}
+
+.itemName {
+  width: 100%;
+  border: none;
+}
+
+.info {
+  font-size: 12px;
 }
 
 .verticalCenter {

@@ -3,8 +3,11 @@
 
   <mdb-card class="mb-4">
     <mdb-card-body class="d-sm-flex justify-content-between">
-      <img src="../assets/greenleaf-logo.png" height='50'>
-      <mdb-btn outline="blue" tag="a" href="#" target="_blank">QUEUE PUSH
+      <mdb-btn class="right" outline="blue" disabled rounded>
+        Push Notifications
+        <mdb-icon icon="paper-plane" class="ml-2" />
+      </mdb-btn>
+      <mdb-btn outline="blue" @click.native='queuePush'>QUEUE PUSH
         <mdb-icon icon="paper-plane" class="ml-2" />
       </mdb-btn>
     </mdb-card-body>
@@ -16,8 +19,8 @@
       <mdb-card>
         <mdb-card-header><i class="far fa-paper-plane"></i> NEW PUSH NOTIFICATION</mdb-card-header>
         <mdb-card-body>
-          <mdb-input label="Title:" v-model="value" />
-          <mdb-input type='textarea' label="Message Body:" v-model="valueBody" />
+          <mdb-input label="Title:" v-model="title" />
+          <mdb-input type='textarea' label="Message Body:" v-model="body" />
         </mdb-card-body>
       </mdb-card>
     </mdb-col>
@@ -29,7 +32,7 @@
 
           <mdb-row>
             <mdb-col col="6">
-              <mdb-time-picker id="timePickerOne" placeholder="Please Select" label="Time" v-model="timePush" />
+              <mdb-time-picker id="timePickerOne" placeholder="Please Select" label="Time" @getValue="getPickerValue" />
             </mdb-col>
             <mdb-col col="6">
               <mdb-date-picker placeholder="Please Select" label="Date" v-model="datePush" />
@@ -45,7 +48,7 @@
       <mdb-card>
         <mdb-card-header><i class="far fa-paper-plane"></i> QUEUE HISTORY</mdb-card-header>
         <mdb-card-body>
-
+          {{notifications}}
         </mdb-card-body>
       </mdb-card>
     </mdb-col>
@@ -95,9 +98,34 @@ export default {
   },
   data() {
     return {
-      date: ''
+      datePush: null,
+      timePush: null,
+      title: null,
+      body: null,
+      notifications: [],
     };
-  }
+  },
+  methods: {
+    queuePush() {
+      var messageObj = {
+        timeStamp: Date.now(),
+        data: {
+          pushDate: this.datePush,
+          pushTime: this.timePush,
+          title: this.title,
+          body: this.body
+        }
+      };
+      this.notifications.push(messageObj);
+      console.log(this.notifications);
+    },
+    getPickerValue(value) {
+      this.timePush = value;
+    },
+  },
+  mounted() {
+
+  },
 }
 </script>
 
