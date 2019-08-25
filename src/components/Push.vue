@@ -1,58 +1,59 @@
 <template>
 <section id="profile">
+  <form>
+    <mdb-card class="mb-4">
+      <mdb-card-body class="d-sm-flex justify-content-between">
+        <mdb-btn class="right" outline="blue" disabled rounded>
+          Push Notifications
+          <mdb-icon icon="paper-plane" class="ml-2" />
+        </mdb-btn>
+        <mdb-btn outline="blue" @click.native='queuePush' type='submit'>QUEUE PUSH
+          <mdb-icon icon="paper-plane" class="ml-2" />
+        </mdb-btn>
+      </mdb-card-body>
+    </mdb-card>
 
-  <mdb-card class="mb-4">
-    <mdb-card-body class="d-sm-flex justify-content-between">
-      <mdb-btn class="right" outline="blue" disabled rounded>
-        Push Notifications
-        <mdb-icon icon="paper-plane" class="ml-2" />
-      </mdb-btn>
-      <mdb-btn outline="blue" @click.native='queuePush'>QUEUE PUSH
-        <mdb-icon icon="paper-plane" class="ml-2" />
-      </mdb-btn>
-    </mdb-card-body>
-  </mdb-card>
+    <mdb-row>
+      <mdb-col lg="8" class="mb-4">
 
-  <mdb-row>
-    <mdb-col lg="8" class="mb-4">
+        <mdb-card>
+          <mdb-card-header><i class="far fa-paper-plane"></i> NEW PUSH NOTIFICATION</mdb-card-header>
+          <mdb-card-body>
+            <mdb-input label="Title:" v-model="title" required />
+            <mdb-input type='textarea' label="Message Body:" v-model="body" required />
+          </mdb-card-body>
+        </mdb-card>
+      </mdb-col>
+      <mdb-col lg="4" class="mb-4">
 
-      <mdb-card>
-        <mdb-card-header><i class="far fa-paper-plane"></i> NEW PUSH NOTIFICATION</mdb-card-header>
-        <mdb-card-body>
-          <mdb-input label="Title:" v-model="title" />
-          <mdb-input type='textarea' label="Message Body:" v-model="body" />
-        </mdb-card-body>
-      </mdb-card>
-    </mdb-col>
-    <mdb-col lg="4" class="mb-4">
+        <mdb-card>
+          <mdb-card-header><i class="far fa-calendar"></i> SCHEDULE PUSH</mdb-card-header>
+          <mdb-card-body>
 
-      <mdb-card>
-        <mdb-card-header><i class="far fa-calendar"></i> SCHEDULE PUSH</mdb-card-header>
-        <mdb-card-body>
+            <mdb-row>
+              <mdb-col col="6">
+                <mdb-time-picker id="timePickerOne" placeholder="Please Select" label="Time" @getValue="getPickerValue" required />
+              </mdb-col>
+              <mdb-col col="6">
+                <mdb-date-picker placeholder="Please Select" label="Date" v-model="datePush" required />
+              </mdb-col>
+            </mdb-row>
+          </mdb-card-body>
+        </mdb-card>
+      </mdb-col>
+    </mdb-row>
+    <mdb-row>
+      <mdb-col lg="12" class="mb-4">
 
-          <mdb-row>
-            <mdb-col col="6">
-              <mdb-time-picker id="timePickerOne" placeholder="Please Select" label="Time" @getValue="getPickerValue" />
-            </mdb-col>
-            <mdb-col col="6">
-              <mdb-date-picker placeholder="Please Select" label="Date" v-model="datePush" />
-            </mdb-col>
-          </mdb-row>
-        </mdb-card-body>
-      </mdb-card>
-    </mdb-col>
-  </mdb-row>
-  <mdb-row>
-    <mdb-col lg="12" class="mb-4">
-
-      <mdb-card>
-        <mdb-card-header><i class="far fa-paper-plane"></i> QUEUE HISTORY</mdb-card-header>
-        <mdb-card-body>
-          {{notifications}}
-        </mdb-card-body>
-      </mdb-card>
-    </mdb-col>
-  </mdb-row>
+        <mdb-card>
+          <mdb-card-header><i class="far fa-paper-plane"></i> QUEUE HISTORY</mdb-card-header>
+          <mdb-card-body>
+            on success - history object
+          </mdb-card-body>
+        </mdb-card>
+      </mdb-col>
+    </mdb-row>
+  </form>
 </section>
 </template>
 
@@ -107,8 +108,9 @@ export default {
   },
   methods: {
     queuePush() {
+      var date = new Date(Date.now());
       var messageObj = {
-        timeStamp: Date.now(),
+        timeStamp: date,
         data: {
           pushDate: this.datePush,
           pushTime: this.timePush,
@@ -116,8 +118,11 @@ export default {
           body: this.body
         }
       };
-      this.notifications.push(messageObj);
-      console.log(this.notifications);
+      if (this.datePush != null && this.timePush != null && this.title != null && this.body != null) {
+        this.notifications.push(messageObj);
+        console.log(this.notifications);
+      }
+
     },
     getPickerValue(value) {
       this.timePush = value;
