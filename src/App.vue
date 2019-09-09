@@ -30,7 +30,7 @@
         <mdb-list-group-item :action="true" :class="activeItem === 1 && 'active'">
           <mdb-icon icon="cannabis" class="mr-3" />Menu Manager</mdb-list-group-item>
       </router-link>
-      <router-link to="/push" @click.native="activeItem = 2">
+      <!-- <router-link to="/push" @click.native="activeItem = 2">
         <mdb-list-group-item :action="true" :class="activeItem === 2 && 'active'">
           <mdb-icon icon="paper-plane" class="mr-3" />Push Notifications</mdb-list-group-item>
       </router-link>
@@ -41,7 +41,7 @@
       <router-link to="/hours" @click.native="activeItem = 4">
         <mdb-list-group-item :action="true" :class="activeItem === 4 && 'active'">
           <mdb-icon icon="clock" class="mr-3" />Hours of Operation</mdb-list-group-item>
-      </router-link>
+      </router-link> -->
       <!-- <router-link to="/dashboard" @click.native="activeItem = 5">
         <mdb-list-group-item :action="true" :class="activeItem === 5 && 'active'">
           <mdb-icon icon="chart-pie" class="mr-3" />Dashboard</mdb-list-group-item>
