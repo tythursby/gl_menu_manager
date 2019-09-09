@@ -7,9 +7,9 @@
   "//": "git+https://oauth2:REPLACE_WITH_YOUR_TOKEN@git.mdbootstrap.com/mdb/vue/vu-pro.git",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --open",
-    "start": "yarn-or-npm run dev",
+    "start": "npm run dev",
     "mdb": "webpack-dev-server --inline --progress --config demo_build/webpack.dev.conf.js --open",
-    "demo": "yarn-or-npm run mdb",
+    "demo": "npm run mdb",
     "remove-demo": "del-cli demo demo_build",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js"
