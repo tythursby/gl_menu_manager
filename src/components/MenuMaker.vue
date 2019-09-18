@@ -1,24 +1,15 @@
 <template>
 <section id="profile">
 
-  <mdb-card class="mb-4">
-    <mdb-card-body class="d-sm-flex justify-content-between">
-      <mdb-btn class="right" outline="blue" disabled rounded>
-        MENU MANAGER
-        <mdb-icon icon="cannabis" class="ml-2" />
-      </mdb-btn>
-
-      <mdb-btn class="right" outline="blue" @click.native='push' darkWaves>PUSH TO CLOUD
-        <mdb-icon icon="cloud" class="ml-2" />
-      </mdb-btn>
-    </mdb-card-body>
-  </mdb-card>
   <mdb-row>
 
     <mdb-col lg="12" md="12" class="mb-r">
       <mdb-card>
         <mdb-card-header class="font-bold mb-2">
-          Actions
+          <mdb-btn class="left" outline="blue" disabled rounded>
+            MENU MANAGER
+            <mdb-icon icon="cannabis" class="ml-2" />
+          </mdb-btn>
         </mdb-card-header>
         <mdb-card-body class="text-center">
 
@@ -28,12 +19,12 @@
               <!-- <mdb-select v-model="locations" label="Inventory Location" /> -->
 
             </mdb-col>
-            <mdb-col lg="4" md="6">
+            <!-- <mdb-col lg="4" md="6">
 
               <mdb-select style='max-height: 30rem' multiple selectAll @getValue="getHiddenValues" :options="hideOptions" label="Hide Categories" />
 
 
-            </mdb-col>
+            </mdb-col> -->
             <mdb-col lg="4" md="6" class="mb-r">
               <mdb-container class='alignLeft'>
                 <p class="label">Category Order</p>
@@ -44,15 +35,15 @@
 
               </mdb-container>
             </mdb-col>
-            <!-- <mdb-col lg="3" md="6" class="mb-r"> -->
 
+            <mdb-col lg="4" md="6" class="mb-r alignLeft">
+              <p class="label">Category Image</p>
+              <mdb-container v-for='(x, index) in categories' :key="index">
+                <img v-bind:src="x.imagePreview" v-show="x.showPreview && x.name === selectedCategory" alt="thumbnail" class="img-thumbnail left" width='100px' style='margin-right: 5px;' />
+                <input type='file' accept="image/*" :id='x.name' :ref='x.name' v-on:change="handleFileUpload(x.name)" v-show='x.name === selectedCategory' />
+              </mdb-container>
+            </mdb-col>
 
-            <!-- <mdb-container class='alignLeft'>
-                <p class="label">Category Low Stock Limit</p>
-                <p class='description'>(All items in category will automatically hide at this Low Stock Limit unless specific Item Stock Limit is set)</p>
-                <mdb-input type='number' v-model='lowStockCategory' />
-              </mdb-container> -->
-            <!-- </mdb-col> -->
           </mdb-row>
         </mdb-card-body>
       </mdb-card>
@@ -82,13 +73,7 @@
             <li>All menus will reflect changes upon Push to Cloud</li>
           </ul>
         </mdb-col>
-        <mdb-col lg="6" md="6" class="mb-r">
-          <p class="label">Category Image</p>
-          <mdb-container class='right' v-for='(x, index) in categories' :key="index">
-            <img v-bind:src="x.imagePreview" v-show="x.showPreview && x.name === selectedCategory" alt="thumbnail" class="img-thumbnail left" width='100px' style='margin-right: 5px;' />
-            <input type='file' accept="image/*" :id='x.name' :ref='x.name' v-on:change="handleFileUpload(x.name)" v-show='x.name === selectedCategory' />
-          </mdb-container>
-        </mdb-col>
+
       </mdb-row>
     </mdb-card-header>
     <mdb-col lg="12" md="12" class="mb-r">
@@ -110,7 +95,7 @@
             <th>Product Id#</th>
             <th>Category Id#</th>
             <th>Strain Type</th>
-            <th title='Check to hide item from all Menus'>Hide Item</th>
+            <!-- <th title='Check to hide item from all Menus'>Hide Item</th> -->
 
           </tr>
         </mdb-tbl-head>
@@ -135,12 +120,12 @@
             <td style="vertical-align: middle">{{x.productid}}</td>
             <td style="vertical-align: middle">{{x.productcategory}}</td>
             <td style="vertical-align: middle">{{x.straintype ? x.straintype : 'N/A'}}</td>
-            <td style="vertical-align: middle">
+            <!-- <td style="vertical-align: middle">
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" :id="x.productid" :key='x.productid' :value='x.productid' :disabled="hideCategories.indexOf(x.category) >= 0" v-model="hideItems" class="custom-control-input hideItemInput">
                 <label class="custom-control-label" :for='x.productid'></label>
               </div>
-            </td>
+            </td> -->
           </tr>
 
         </draggable>

@@ -104,10 +104,7 @@ import {
   mdbFooter,
   waves
 } from 'mdbvue'
-import Profile from './components/Profile';
 import MenuMaker from './components/MenuMaker';
-import Push from './components/Push';
-import Hours from './components/Hours';
 
 export default {
   name: 'AdminTemplate',
@@ -124,10 +121,8 @@ export default {
     mdbIcon,
     mdbCardBody,
     'ftr': mdbFooter,
-    Profile,
     MenuMaker,
-    Push,
-    Hours
+
   },
   data() {
     return {
