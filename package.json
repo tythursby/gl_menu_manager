@@ -21,6 +21,7 @@
     "mdbvue": "./mdbvue-5.7.0.tgz",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
+    "vue-croppie": "^2.0.1",
     "vue-router": "^3.0.6",
     "vue2-google-maps": "^0.10.7",
     "vue2-touch-events": "^2.0.0",

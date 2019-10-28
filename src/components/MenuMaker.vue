@@ -3,59 +3,50 @@
 
   <mdb-row>
 
-    <mdb-col lg="12" md="12" class="mb-r">
+    <mdb-col lg="12" md="12">
       <mdb-card>
-        <mdb-card-header class="font-bold mb-2">
-          <mdb-btn class="left" outline="blue" disabled rounded>
-            MENU MANAGER
-            <mdb-icon icon="cannabis" class="ml-2" />
-          </mdb-btn>
-        </mdb-card-header>
         <mdb-card-body class="text-center">
 
           <mdb-row>
+
             <mdb-col lg="4" md="6">
               <mdb-select style='max-height: 30rem' color='default' @getValue="getSelectedCategory" :options="editCategoryOptions" label="Edit Category" />
-              <!-- <mdb-select v-model="locations" label="Inventory Location" /> -->
 
             </mdb-col>
-            <!-- <mdb-col lg="4" md="6">
-
-              <mdb-select style='max-height: 30rem' multiple selectAll @getValue="getHiddenValues" :options="hideOptions" label="Hide Categories" />
-
-
-            </mdb-col> -->
-            <mdb-col lg="4" md="6" class="mb-r">
-              <mdb-container class='alignLeft'>
+            <mdb-col lg="2" md="6" class="alignLeft">
+              <mdb-container>
                 <p class="label">Category Order</p>
 
-                <mdb-input type="checkbox" id="alphabetical" name="arrange_alpha" v-model="arrangeAlpha" label="Arrange Alphabetically" />
-
-                <mdb-btn size="sm" class='center' outline='default' v-show='!arrangeAlpha' @click.native="modal = true" darkWaves>Custom Arrangement</mdb-btn>
+                <mdb-btn size="sm" class='center' outline='default' @click.native="categoryModal = true" darkWaves rounded>Arrange Categories</mdb-btn>
 
               </mdb-container>
             </mdb-col>
-
-            <mdb-col lg="4" md="6" class="mb-r alignLeft">
+            <mdb-col lg="4" md="6" class="alignLeft">
               <p class="label">Category Image</p>
-              <mdb-container v-for='(x, index) in categories' :key="index">
-                <img v-bind:src="x.imagePreview" v-show="x.showPreview && x.name === selectedCategory" alt="thumbnail" class="img-thumbnail left" width='100px' style='margin-right: 5px;' />
-                <input type='file' accept="image/*" :id='x.name' :ref='x.name' v-on:change="handleFileUpload(x.name)" v-show='x.name === selectedCategory' />
-              </mdb-container>
+
+              <tr v-for='(x, index) in categories' :key="index" v-show="x.name === selectedCategory" style='flex-direction: row;'>
+
+                <img v-bind:src="x.imagePreview ? x.imagePreview : x.photo" alt="thumbnail" class="img-thumbnails left" width='100px' style='margin-right: 10px;' />
+
+                <td style="vertical-align: top; padding-left: 0;">
+                  <input class='category' style='font-size: 14px; line-height: 1.2em' type='file' accept="image/*" :id="'img_'+x.id" :ref='x.id' v-on:change="handleFileUploadCategory(x.id); categoryImageId = x.id " />
+                </td>
+              </tr>
             </mdb-col>
 
           </mdb-row>
+
         </mdb-card-body>
       </mdb-card>
     </mdb-col>
   </mdb-row>
 
-  <mdb-modal size="lg" :show="modal" @close="modal = false">
+  <mdb-modal size="lg" :show="categoryModal" @close="categoryModal = false">
     <mdb-modal-header>
       Drag and Drop to Arrange
     </mdb-modal-header>
     <mdb-modal-body>
-      <draggable v-model="editCategoryOptions" @start="drag=true" @end="newCategoryOrder">
+      <draggable v-model="editCategoryOptions" @start="drag=true" @end="postCategoryOrder">
         <div v-for="(cat, index) in editCategoryOptions" :key="index" onmouseover="" style="cursor: pointer;">
           <mdb-btn sm color='default' v-if='cat.value != null' disabled>{{cat.value}}</mdb-btn>
         </div>
@@ -65,15 +56,15 @@
 
   <mdb-card cascade narrow v-show='selectedCategory'>
     <mdb-card-header class="font-bold mb-2">
-      <mdb-row>
+      <mdb-row v-if='x.name === selectedCategory' v-for='(x, index) in categories' :key='index'>
         <mdb-col lg="6" md="6" class="mb-r">
-          <mdb-input v-if='x.name === selectedCategory' v-for='(x, index) in categories' :label="x.name" icon="edit" v-model='x.editedName' :key='index' />
+          <mdb-input :label="x.name" icon="edit" v-model='x.editedName' />
           <ul class='info'>
             <li>Drag and drop item rows to rearrange</li>
-            <li>All menus will reflect changes upon Push to Cloud</li>
+            <li>Click Item Name to edit</li>
           </ul>
         </mdb-col>
-
+        <mdb-btn size="sm" style='height:40px' outline='default' @click.native="postRenameCategory(x.editedName, x.id)" darkWaves rounded>rename</mdb-btn>
       </mdb-row>
     </mdb-card-header>
     <mdb-col lg="12" md="12" class="mb-r">
@@ -92,40 +83,41 @@
             </th>
             <th>Price</th>
             <!-- <th>Low Stock Limit</th> -->
-            <th>Product Id#</th>
+            <!-- <th>Product Id#</th>
             <th>Category Id#</th>
-            <th>Strain Type</th>
+            <th>Strain Type</th> -->
             <!-- <th title='Check to hide item from all Menus'>Hide Item</th> -->
 
           </tr>
         </mdb-tbl-head>
-        <draggable :list="obj.items" :tag="'tbody'" @end="newProductOrder(obj.items)" ghost-class="ghost" v-for='(obj, index) in products' :key='index'>
+        <draggable :list="obj.items" :tag="'tbody'" @end="postProductOrder(obj)" ghost-class="ghost" v-for='(obj, index) in products' :key='index'>
 
           <tr scope="row" v-if='obj.category === selectedCategory' v-for='(x, index) in obj.items' class="tableRow" onmouseover="" style="cursor: pointer;">
             <th scope="row">
-              <img v-bind:src="x.imagePreview" v-show='x.imagePreview' alt="thumbnail" class="img-thumbnail left" :width="80" style='margin-right: 5px;' :key="index" />
+              <img v-bind:src="x.imagePreview ? x.imagePreview : x.photo" alt="thumbnail" class="img-thumbnails left" :width="80" style='margin-right: 5px;' :key="index" />
             </th>
             <td style="vertical-align: middle; padding-left: 0;">
-              <input style='font-size: 14px; line-height: 1.2em;' type='file' accept="image/*" :id="'img_'+x.productid" :ref='x.productid' v-on:change="handleFileUploadProducts(x.productid)" :key="index" />
+              <input style='font-size: 14px; line-height: 1.2em;' type='file' accept="image/*" :id="'img_'+x.id" :ref='x.id' v-on:change="handleFileUploadProducts(x.id); productImageId = x.id" :key="index" />
             </td>
             <td style="vertical-align: middle; width: auto">
               <div>
-                <label style='margin: 0' v-show='x.showEditing === false && x.editedName === ""' v-on:click='x.showEditing = true'>{{x.name}}</label>
-                <label style='margin: 0' v-show='x.showEditing === false && x.editedName != ""' v-on:click='x.showEditing = true'>{{x.editedName}}</label>
-                <input v-show='x.showEditing' v-model='x.editedName' v-on:blur="x.showEditing=false; $emit('update')" @keyup.enter="x.showEditing=false; $emit('update')" placeholder="Rename" style='overflow: visible; border: none;' />
+                <label class="nameLabel" onmouseover="" style="cursor: text;" v-show='x.showEditing === false && x.editedName === ""' v-on:click='x.showEditing = true'>{{x.name}}</label>
+                <label class="nameLabel" onmouseover="" style="cursor: text;" v-show='x.showEditing === false && x.editedName != ""' v-on:click='x.showEditing = true'>{{x.editedName}}</label>
+                <input v-show='x.showEditing' v-model='x.editedName' v-on:blur="x.showEditing=false; $emit('update'); postRenameProduct(x.editedName, x.id)" @keyup.enter="x.showEditing=false; $emit('update')" placeholder="Rename"
+                  style='overflow: visible; border: none;' />
               </div>
             </td>
             <td style="vertical-align: middle">{{x.price}}</td>
             <!-- <td>{{}}</td> lowLimit-->
-            <td style="vertical-align: middle">{{x.productid}}</td>
+            <!-- <td style="vertical-align: middle">{{x.productid}}</td>
             <td style="vertical-align: middle">{{x.productcategory}}</td>
-            <td style="vertical-align: middle">{{x.straintype ? x.straintype : 'N/A'}}</td>
+            <td style="vertical-align: middle">{{x.straintype ? x.straintype : 'N/A'}}</td> -->
             <!-- <td style="vertical-align: middle">
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" :id="x.productid" :key='x.productid' :value='x.productid' :disabled="hideCategories.indexOf(x.category) >= 0" v-model="hideItems" class="custom-control-input hideItemInput">
-                <label class="custom-control-label" :for='x.productid'></label>
-              </div>
-            </td> -->
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" :id="x.productid" :key='x.productid' :value='x.productid' :disabled="hideCategories.indexOf(x.category) >= 0" v-model="hideItems" class="custom-control-input hideItemInput">
+                  <label class="custom-control-label" :for='x.productid'></label>
+                </div>
+              </td> -->
           </tr>
 
         </draggable>
@@ -133,7 +125,10 @@
       </mdb-tbl>
     </mdb-col>
   </mdb-card>
-
+  <CropModal :productImage='productImage' :productImageId='productImageId' :show='showCropProductModal' @closeModal='closeProductModal'>
+  </CropModal>
+  <CropCategoryModal :categoryImage='categoryImage' :categoryImageId='categoryImageId' :categoryName='selectedCategory' :show='showCropCategoryModal' @closeModal='closeCategoryModal'>
+  </CropCategoryModal>
 </section>
 </template>
 
@@ -162,6 +157,8 @@ import {
   mdbContainer
 } from 'mdbvue'
 import draggable from 'vuedraggable';
+import CropModal from './CropComponent';
+import CropCategoryModal from './CropCategory';
 export default {
   name: 'MenuMaker',
   components: {
@@ -186,19 +183,27 @@ export default {
     mdbModalHeader,
     mdbNumericInput,
     mdbContainer,
-    draggable
+    draggable,
+    CropModal,
+    CropCategoryModal
   },
   data() {
     return {
-      modal: false,
+      categoryModal: false,
+      showCropProductModal: false,
+      showCropCategoryModal: false,
+      productImage: '',
+      productImageId: null,
+      categoryImage: '',
+      categoryImageId: null,
+      cropped: null,
+      productImageFile: '',
+      categoryImageFile: '',
       categories: [],
       categoryOrder: [],
       productOrder: [],
-      arrangeAlpha: false,
       selectedCategory: null,
       selectedCategoryItems: [],
-      hideCategories: [],
-      hideItems: [],
       products: [],
       menu: null,
       editCategoryOptions: [{
@@ -207,105 +212,134 @@ export default {
         disabled: true,
         selected: true
       }],
-      hideOptions: [{
-        text: 'Choose',
-        value: null,
-        disabled: true,
-        selected: true
-      }]
     }
   },
   methods: {
-    push() {
-      var data = {
-        arrangeAlpha: this.arrangeAlpha,
-        categories: this.categories,
-        products: this.products,
-        categoryOrder: this.categoryOrder,
-        productOrder: this.productOrder,
-        hideCategories: this.hideCategories,
-        hideItems: this.hideItems
-      }
-      console.log(data);
+    closeProductModal() {
+      this.showCropProductModal = false
     },
-    newCategoryOrder() {
-      this.categoryOrder = this.editCategoryOptions.filter(x => (x.value != null)).map(y => y.text);
+    closeCategoryModal() {
+      this.showCropCategoryModal = false
     },
-    newProductOrder(value) {
-      var category = this.selectedCategory;
-      var orderInCat = value.map(x => x.productid);
-      var object = {
-        category: category,
-        newOrder: orderInCat
-      };
+    resetInput(id) {
+      document.getElementById('img_' + id).value = '';
+    },
+    postRenameProduct(newName, id) {
+      this.axios
+        .post('https://api.compassionate.cloud/rename/product', {
+          org: 'greenleaf',
+          id: id,
+          name: newName
+        })
+        .then(function(response) {
+          console.log(response);
+          // if (response.data.success === true) {
+          //
+          // }
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
+    },
+    postRenameCategory(newName, id) {
+      this.axios
+        .post('https://api.compassionate.cloud/rename/category', {
+          org: 'greenleaf',
+          id: id,
+          name: newName
+        })
+        .then(function(response) {
+          console.log(response);
+          // if (response.data.success === true) {
+          //
+          // }
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
+    },
+    postCategoryOrder() {
+      this.categoryOrder = this.editCategoryOptions.filter(x => (x.value != null)).map(y => y.id);
 
-      const index = this.productOrder.findIndex((e) => e.category === category);
+      this.axios
+        .post('https://api.compassionate.cloud/reorder/category', {
+          org: 'greenleaf',
+          categories: this.categoryOrder
+        })
+        .then(function(response) {
+          console.log(response);
+          // if (response.data.success === true) {
+          //
+          // }
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
+    },
+    postProductOrder(obj) {
+      var category = obj.id;
+      var orderInCat = obj.items.map(x => x.id);
 
-      if (index === -1) {
-        this.productOrder.push(object);
-      }
-      if (index >= 0) {
-        this.productOrder[index].newOrder = orderInCat;
-      }
+      // alert(JSON.stringify(object));
+      this.axios
+        .post('https://api.compassionate.cloud/reorder/products', {
+          org: 'greenleaf',
+          products: orderInCat,
+          category: category
+        })
+        .then(function(response) {
+          console.log(response);
+          // if (response.data.success === true) {
+          //
+          // }
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
 
     },
-    getHiddenValues(value) {
-      this.hideCategories = value; //adds/subs category name to []
-      // check/uncheck Hide Item for all item id# in category
-      var itemsObj = this.menu.map(x => Object.values(x.items).map(item => new Object({
-        cat: item.category,
-        productid: item.productid
-      })));
-      var allItems = [].concat.apply([], itemsObj);
-      var itemsToHide = allItems.filter(item => (value.indexOf(item.cat) >= 0)).map(x => x.productid);
-      this.hideItems = itemsToHide;
-    },
 
-    handleFileUpload(x) {
-      // console.log(this.$refs[x])
-      for (var i = 0; i < this.categories.length; i++) {
-        var name = this.categories[i].name;
-        if (name === x) {
-          this.categories[i].file = this.$refs[x][0].files[0];
-          var current = this.categories[i];
-          if (/\.(jpe?g|png|gif)$/i.test(this.categories[i].file.name)) {
+    handleFileUploadCategory(x) {
 
-            let reader = new FileReader();
+      this.categoryImageFile = this.$refs[x][0].files[0];
 
-            reader.addEventListener("load", function() {
-              current.showPreview = true;
-              current.imagePreview = reader.result;
-            }.bind(this), false);
-
-            reader.readAsDataURL(this.categories[i].file);
-          }
-        }
-      }
-    },
-
-    handleFileUploadProducts(x) {
-      var cat = this.products.filter(e => e.category === this.selectedCategory);
-      var items = cat[0].items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].productid === x) {
-          var currentItem = items[i];
-        }
-      }
-      currentItem.file = this.$refs[x][0].files[0];
-
-      if (/\.(jpe?g|png|gif)$/i.test(currentItem.file.name)) {
+      if (/\.(jpe?g|png|gif)$/i.test(this.categoryImageFile.name)) {
 
         let reader = new FileReader();
 
         reader.addEventListener("load", function() {
 
-          currentItem.imagePreview = reader.result;
+          this.categoryImage = reader.result;
+
         }.bind(this), false);
 
-        reader.readAsDataURL(currentItem.file);
+        reader.readAsDataURL(this.categoryImageFile);
+
       }
+      this.showCropCategoryModal = true;
 
     },
+
+    handleFileUploadProducts(x) {
+
+      this.productImageFile = this.$refs[x][0].files[0];
+
+      if (/\.(jpe?g|png|gif)$/i.test(this.productImageFile.name)) {
+
+        let reader = new FileReader();
+
+        reader.addEventListener("load", function() {
+
+          this.productImage = reader.result;
+
+        }.bind(this), false);
+
+        reader.readAsDataURL(this.productImageFile);
+
+      }
+      this.showCropProductModal = true;
+    },
+
     getSelectedCategory(value) {
       this.selectedCategory = value;
 
@@ -321,18 +355,17 @@ export default {
   },
   mounted() {
     this.axios
-      .get('https://api.compassionate.cloud/greenleaf/menu')
+      .get('https://api.compassionate.cloud/greenleaf/menu2')
       .then(response => {
         this.menu = response.data.data;
         var organized = this.menu.map(cat => new Object({
           category: cat.name,
+          id: cat.id,
           items: Object.values(cat.items).map(x => new Object({
             name: x.name,
-            category: x.category,
-            productid: x.productid,
+            id: x.id,
             price: x.price,
-            productcategory: x.productcategory,
-            straintype: x.straintype,
+            photo: x.photo,
             showEditing: false,
             editedName: '',
             file: '',
@@ -347,6 +380,8 @@ export default {
 
           var catImageObj = {
             name: this.menu[i].name,
+            id: this.menu[i].id,
+            photo: this.menu[i].photo,
             editedName: '',
             file: '',
             imagePreview: '',
@@ -354,16 +389,13 @@ export default {
           };
           var catObj = {
             text: this.menu[i].name,
+            id: this.menu[i].id,
             value: this.menu[i].name,
             selected: false
           };
-          var hideObj = {
-            text: this.menu[i].name,
-            value: this.menu[i].name,
-            selected: false
-          };
+
           this.editCategoryOptions.push(catObj);
-          this.hideOptions.push(hideObj);
+
           this.categories.push(catImageObj);
 
         };
@@ -440,7 +472,9 @@ export default {
 
 .label {
   font-weight: bold;
+  font-size: 14px;
   align-self: 'center';
+  margin-bottom: .5rem !important;
 }
 
 .alignLeft {
@@ -460,9 +494,17 @@ export default {
   font-size: 12px;
 }
 
+/* input[type='file'].category {
+  color: transparent;
+} */
+
 .verticalCenter {
   align-self: center;
 
+}
+
+.nameLabel {
+  margin: 0;
 }
 
 .profile-card-footer {
@@ -482,5 +524,22 @@ export default {
   /* Required to make elements draggable in old WebKit */
   -khtml-user-drag: element;
   -webkit-user-drag: element;
+}
+
+.croppie-container .cr-image {
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  max-height: none;
+  max-width: none;
+}
+
+.img-thumbnails {
+  padding: .15rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: .25rem;
+  height: auto;
 }
 </style>

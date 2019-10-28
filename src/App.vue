@@ -14,8 +14,8 @@
 
         <!-- <mdb-nav-item href="#" waves-fixed class="border border-light rounded mr-1" target="_blank">
           <mdb-icon icon="tools" class="mr-2" />Account Settings </mdb-nav-item> -->
-        <mdb-nav-item href="#" waves-fixed class="border border-light rounded" target="_blank">
-          <mdb-icon icon="user" far class="mr-2" />Log Out </mdb-nav-item>
+        <!-- <mdb-nav-item href="#" waves-fixed class="border border-light rounded" target="_blank">
+          <mdb-icon icon="user" far class="mr-2" />Log Out </mdb-nav-item> -->
       </mdb-navbar-nav>
     </mdb-navbar-toggler>
   </mdb-navbar>
@@ -105,7 +105,7 @@ import {
   waves
 } from 'mdbvue'
 import MenuMaker from './components/MenuMaker';
-
+import Crop from './components/CropComponent';
 export default {
   name: 'AdminTemplate',
   components: {
@@ -122,6 +122,7 @@ export default {
     mdbCardBody,
     'ftr': mdbFooter,
     MenuMaker,
+    Crop
 
   },
   data() {
